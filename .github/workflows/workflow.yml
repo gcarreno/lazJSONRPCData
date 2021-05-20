@@ -6,7 +6,7 @@ on:
     paths-ignore:
     - "README.md"
     branches:
-      - master
+      - main
       - releases/*
 
 jobs:
