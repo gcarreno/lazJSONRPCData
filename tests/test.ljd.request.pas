@@ -38,10 +38,8 @@ uses
 ;
 
 type
-
-  { TTestNosoPoolStratumJSONRPCRequest }
-
-  TTestNosoPoolStratumJSONRPCRequest= class(TTestCase)
+{ TTestlazJSONRPCRequest }
+  TTestlazJSONRPCRequest= class(TTestCase)
   private
     FRequest: TRequestParamsArray;
 
@@ -50,24 +48,24 @@ type
     procedure CheckFieldsCreateRequestEmpty;
     procedure CheckFieldsCreateWithMethod;
   published
-    procedure TestStratumJSONRPCRequestCreate;
+    procedure TestlazJSONRPCRequestCreate;
 
-    procedure TestStratumJSONRPCRequestCreateFromJSONData;
-    procedure TestStratumJSONRPCRequestCreateFromJSONObject;
-    procedure TestStratumJSONRPCRequestCreateFromStream;
+    procedure TestlazJSONRPCRequestCreateFromJSONData;
+    procedure TestlazJSONRPCRequestCreateFromJSONObject;
+    procedure TestlazJSONRPCRequestCreateFromStream;
 
-    procedure TestStratumJSONRPCRequestCreateNotification;
-    procedure TestStratumJSONRPCRequestCreateRequestEmpty;
-    procedure TestStratumJSONRPCRequestCreateExceptionEmptyString;
-    procedure TestStratumJSONRPCRequestCreateExceptionCannotParse;
-    procedure TestStratumJSONRPCRequestCreateExceptionMissingMembers;
-    procedure TestStratumJSONRPCRequestCreateWithMethod;
+    procedure TestlazJSONRPCRequestCreateNotification;
+    procedure TestlazJSONRPCRequestCreateRequestEmpty;
+    procedure TestlazJSONRPCRequestCreateExceptionEmptyString;
+    procedure TestlazJSONRPCRequestCreateExceptionCannotParse;
+    procedure TestlazJSONRPCRequestCreateExceptionMissingMembers;
+    procedure TestlazJSONRPCRequestCreateWithMethod;
 
-    procedure TestStratumJSONRPCRequestCreateAsJSON;
-    procedure TestStratumJSONRPCRequestCreateAsJSONNotification;
-    procedure TestStratumJSONRPCRequestCreateAsJSONData;
-    procedure TestStratumJSONRPCRequestCreateAsJSONObject;
-    procedure TestStratumJSONRPCRequestCreateAsStream;
+    procedure TestlazJSONRPCRequestCreateAsJSON;
+    procedure TestlazJSONRPCRequestCreateAsJSONNotification;
+    procedure TestlazJSONRPCRequestCreateAsJSONData;
+    procedure TestlazJSONRPCRequestCreateAsJSONObject;
+    procedure TestlazJSONRPCRequestCreateAsStream;
   end;
 
 implementation
@@ -122,7 +120,7 @@ const
     '}'
   ;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.CheckFieldsCreate;
+procedure TTestlazJSONRPCRequest.CheckFieldsCreate;
 begin
   AssertEquals('Request '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FRequest.JSONRPC);
   AssertEquals('Request '+cjMethod+' is Empty', EmptyStr, FRequest.Method);
@@ -132,7 +130,7 @@ begin
   AssertFalse('Request is not a notification', FRequest.Notification);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.CheckFieldsCreateNotification;
+procedure TTestlazJSONRPCRequest.CheckFieldsCreateNotification;
 begin
   AssertEquals('Request '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FRequest.JSONRPC);
   AssertEquals('Request '+cjMethod+' is Empty', EmptyStr, FRequest.Method);
@@ -141,7 +139,7 @@ begin
   AssertTrue('Request is a notification', FRequest.Notification);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.CheckFieldsCreateRequestEmpty;
+procedure TTestlazJSONRPCRequest.CheckFieldsCreateRequestEmpty;
 begin
   AssertEquals('Request '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FRequest.JSONRPC);
   AssertEquals('Request '+cjMethod+' is Empty', EmptyStr, FRequest.Method);
@@ -150,7 +148,7 @@ begin
   AssertEquals('Request '+cjID+' is 1', 1, FRequest.ID);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.CheckFieldsCreateWithMethod;
+procedure TTestlazJSONRPCRequest.CheckFieldsCreateWithMethod;
 begin
   AssertEquals('Request '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FRequest.JSONRPC);
   AssertEquals('Request '+cjMethod+' is mining.authorize', 'mining.authorize', FRequest.Method);
@@ -162,49 +160,49 @@ begin
   AssertEquals('Request '+cjID+' is 1', 1, FRequest.ID);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreate;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreate;
 begin
   FRequest:= TRequestParamsArray.Create;
   CheckFieldsCreate;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateFromJSONData;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromJSONData;
 begin
   FRequest:= TRequestParamsArray.Create(GetJSONData(cjRequestEmpty));
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateFromJSONObject;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromJSONObject;
 begin
   FRequest:= TRequestParamsArray.Create(TJSONObject(GetJSONData(cjRequestEmpty)));
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateFromStream;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromStream;
 begin
   FRequest:= TRequestParamsArray.Create(TStringStream.Create(cjRequestEmpty, TEncoding.UTF8));
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateNotification;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateNotification;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestNotification);
   CheckFieldsCreateNotification;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateRequestEmpty;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateRequestEmpty;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestEmpty);
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateExceptionEmptyString;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateExceptionEmptyString;
 var
   error: Integer = 0;
 begin
@@ -217,7 +215,7 @@ begin
   AssertEquals('Request Error Empty String', -32700, error);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateExceptionCannotParse;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateExceptionCannotParse;
 var
   error: Integer = 0;
 begin
@@ -230,7 +228,7 @@ begin
   AssertEquals('Request Error Cannot Parse', -32700, error);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateExceptionMissingMembers;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateExceptionMissingMembers;
 var
   error: Integer;
 begin
@@ -263,14 +261,14 @@ begin
   AssertEquals('Request Error Cannot Parse', -32600, error);
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateWithMethod;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateWithMethod;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestEchoWithMethod);
   CheckFieldsCreateWithMethod;
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateAsJSON;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateAsJSON;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
@@ -278,7 +276,7 @@ begin
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateAsJSONNotification;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateAsJSONNotification;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestNotification);
   AssertTrue('Request is a notification', FRequest.Notification);
@@ -286,7 +284,7 @@ begin
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateAsJSONData;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateAsJSONData;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
@@ -294,7 +292,7 @@ begin
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateAsJSONObject;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateAsJSONObject;
 begin
   FRequest:= TRequestParamsArray.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
@@ -302,7 +300,7 @@ begin
   FRequest.Free;
 end;
 
-procedure TTestNosoPoolStratumJSONRPCRequest.TestStratumJSONRPCRequestCreateAsStream;
+procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateAsStream;
 var
   ssRequest: TStringStream;
 begin
@@ -316,6 +314,6 @@ begin
 end;
 
 initialization
-  RegisterTest(TTestNosoPoolStratumJSONRPCRequest);
+  RegisterTest(TTestlazJSONRPCRequest);
 end.
 

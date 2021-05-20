@@ -28,7 +28,9 @@ program TestlazJSONRPCDataCLI;
 uses
   Classes
 , consoletestrunner
-, Test.LJD.Request;
+, Test.LJD.Request
+//, Test.LJD.Response
+;
 
 type
 
