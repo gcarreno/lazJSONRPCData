@@ -30,6 +30,7 @@ uses
 , consoletestrunner
 , Test.LJD.Request
 , Test.LJD.Response
+, Test.LJD.Error
 ;
 
 type
