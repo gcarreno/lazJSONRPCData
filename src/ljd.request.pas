@@ -54,11 +54,13 @@ type
     FJSONRPC: TJSONStringType;
     FMethod: TJSONStringType;
     FParamsType: TRequestParametersType;
-    FParams: TJSONData;
+    FParams: TJSONStringType;
     FID: Int64;
     FNotification: Boolean;
 
     FCompressedJSON: Boolean;
+
+    function GetParams: TJSONData;
 
     procedure setFromJSON(const AJSON: TJSONStringType);
     procedure setFromJSONData(const AJSONData: TJSONData);
@@ -92,7 +94,7 @@ type
       read FParamsType
       write FParamsType;
     property Params: TJSONData
-      read FParams;
+      read GetParams;
     property ID: Int64
       read FID
       write FID;
@@ -134,7 +136,6 @@ implementation
 
 uses
   LJD.JSON.Utils
-, Dialogs
 ;
 
 { TMethod }
@@ -160,6 +161,11 @@ begin
   finally
     jData.Free;
   end;
+end;
+
+function TRequest.GetParams: TJSONData;
+begin
+  Result := GetJSONData(FParams);
 end;
 
 procedure TRequest.setFromJSONData(const AJSONData: TJSONData);
@@ -198,8 +204,7 @@ begin
   jData:= AJSONObject.Find(cjParams);
   if Assigned(jData) then
   begin
-    //FParams.Free;
-    FParams:= jData;
+    FParams:= jData.AsJSON;
     case jData.JSONType of
       jtArray: FParamsType:= rptArray;
       jtObject: FParamsType:= rptObject;
@@ -266,7 +271,7 @@ begin
   Result:= TJSONObject.Create;
   Result.Add(cjJSONRPC, cjJSONRPCversion);
   Result.Add(cjMethod, FMethod);
-  Result.Add(cjParams, FParams);
+  Result.Add(cjParams, GetJSONData(FParams));
   if not FNotification then
   begin
     Result.Add(cjID, FID);
@@ -290,7 +295,7 @@ begin
   FJSONRPC:= cjJSONRPCversion;
   FMethod:= EmptyStr;
   FParamsType:= rptUnknown;
-  FParams:= nil;
+  FParams:= EmptyStr;
   FID:= -1;
   FNotification:= False;
 end;
