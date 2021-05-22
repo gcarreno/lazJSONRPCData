@@ -1,4 +1,4 @@
-{ Implement Test Response Object
+{ Implements Test Response Object
 
 Copyright (c) 2021 Gustavo Carreno <guscarreno@gmail.com>
 

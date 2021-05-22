@@ -1,4 +1,4 @@
-{ Implement Request Object
+{ Implements Request Object
 
 Copyright (c) 2021 Gustavo Carreno <guscarreno@gmail.com>
 
@@ -292,6 +292,7 @@ end;
 constructor TRequest.Create;
 begin
   FCompressedJSON:= True;
+
   FJSONRPC:= cjJSONRPCversion;
   FMethod:= EmptyStr;
   FParamsType:= rptUnknown;

@@ -103,7 +103,7 @@
         <PackageName Value="FCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="5">
+    <Units Count="7">
       <Unit0>
         <Filename Value="TestlazJSONRPCDataGUI.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -129,6 +129,16 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="LJD.Response"/>
       </Unit4>
+      <Unit5>
+        <Filename Value="test.ljd.error.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Test.LJD.Error"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="../src/ljd.error.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LJD.Error"/>
+      </Unit6>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

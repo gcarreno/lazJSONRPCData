@@ -1,4 +1,4 @@
-{ Implements Program TestlazJSONRPCData
+{ Implements Test Error Object
 
 Copyright (c) 2021 Gustavo Carreno <guscarreno@gmail.com>
 
@@ -21,24 +21,56 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 }
-program TestlazJSONRPCData;
+unit Test.LJD.Error;
 
-{$mode objfpc}{$H+}
+{$mode ObjFPC}{$H+}
+
+interface
 
 uses
-  Interfaces
-, Forms
-, GuiTestRunner
-, Test.LJD.Request
-, Test.LJD.Response
-, Test.LJD.Error, LJD.Error
+  Classes
+, SysUtils
+, fpcunit
+//, testutils
+, testregistry
+, fpjson
+, LJD.Error
 ;
 
-{$R *.res}
+type
+{ TTestlazJSONRPCError }
+  TTestlazJSONRPCError= class(TTestCase)
+  private
+    FError: TError;
 
+    procedure CheckFieldsCreate;
+  protected
+  public
+  published
+    procedure TestlazJSONRPCErrorCreate;
+  end;
+
+implementation
+
+{ TTestlazJSONRPCError }
+
+procedure TTestlazJSONRPCError.CheckFieldsCreate;
 begin
-  Application.Initialize;
-  Application.CreateForm(TGuiTestRunner, TestRunner);
-  Application.Run;
+  AssertEquals('Error'+cjCode+' is 0', 0, FError.Code);
+  AssertEquals('Error'+cjMessage+' is Empty', EmptyStr, FError.Message);
+  AssertFalse('Error Has Data is false', FError.HasData);
+  AssertNull('Error'+cjData+' is null', FError.Data);
+  //AssertEquals('Error'+cj+' is ', , );
+end;
+
+procedure TTestlazJSONRPCError.TestlazJSONRPCErrorCreate;
+begin
+  FError:= TError.Create;
+  CheckFieldsCreate;
+  FError.Free;
+end;
+
+initialization
+  RegisterTest(TTestlazJSONRPCError);
 end.
 

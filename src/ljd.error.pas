@@ -1,4 +1,4 @@
-{ Implements Response Object
+{ Implements Error Object
 
 Copyright (c) 2021 Gustavo Carreno <guscarreno@gmail.com>
 
@@ -21,7 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 }
-unit LJD.Response;
+unit LJD.Error;
 
 {$mode ObjFPC}{$H+}
 
@@ -34,29 +34,33 @@ uses
 ;
 
 type
-{ TResponse }
-  TResponse = class(TObject)
+{ TError }
+  TError = class(TObject)
   private
-    FJSONRPC: TJSONStringType;
+    FCode: Integer;
+    FID: Integer;
+    FMessage: TJSONStringType;
+    FData: TJSONStringType;
 
-    FID: Int64;
-
-    FIsError: Boolean;
+    FHasData: Boolean;
 
     FCompressedJSON: Boolean;
+    function GetData: TJSONData;
   protected
   public
     constructor Create;
 
-    property JSONRPC: TJSONStringType
-      read FJSONRPC;
-
-    property ID: Int64
-      read FID
+    property Code: Integer
+      read FCode
       write FID;
-    property IsError: Boolean
-      read FIsError
-      write FIsError;
+    property Message: TJSONStringType
+      read FMessage
+      write FMessage;
+    property Data: TJSONData
+      read GetData;
+
+    property HasData: Boolean
+      read FHasData;
 
     property CompressedJSON: Boolean
       read FCompressedJSON
@@ -65,12 +69,22 @@ type
   end;
 
 const
-  cjJSONRPCversion = '2.0';
+  cjCode = 'code';
+  cjMessage = 'message';
+  cjData = 'data';
 
-  cjJSONRPC = 'jsonrpc';
-  cjResult = 'result';
-  cjError = 'error';
-  cjID = 'ID';
+  cJSONRPCCodeParseError     = -32700;
+  cJSONRPCCodeInvalidRequest = -32600;
+  cJSONRPCCodeMethodNotFound = -32601;
+  cJSONRPCCodeInvalidParams  = -32602;
+  cJSONRPCCodeInternalError  = -32603;
+
+resourcestring
+  rsMessageParseError     = 'Parse error';
+  rsMessageInvalidRequest = 'Invalid request';
+  rsMessageMethodNotFound = 'Method not found';
+  rsMessageInvalidParams  = 'Invalid params';
+  rsMessageInternalError  = 'Internal Error';
 
 implementation
 
@@ -78,16 +92,21 @@ uses
   LJD.JSON.Utils
 ;
 
-{ TResponse }
+{ TError }
 
-constructor TResponse.Create;
+function TError.GetData: TJSONData;
+begin
+  Result:= GetJSONData(FData);
+end;
+
+constructor TError.Create;
 begin
   FCompressedJSON:= True;
 
-  FJSONRPC:= cjJSONRPCversion;
-
-  FID:= -1;
-  FIsError:= False;
+  FCode:= 0;
+  FMessage:= EmptyStr;
+  FData:= EmptyStr;
+  FHasData:= False;
 end;
 
 end.
