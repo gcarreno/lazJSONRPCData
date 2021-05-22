@@ -37,7 +37,39 @@ uses
 , LJD.Response
 ;
 
+type
+{ TTestlazJSONRPCResponse }
+  TTestlazJSONRPCResponse= class(TTestCase)
+  private
+    FResponse: TResponse;
+
+    procedure CheckFieldsCreate;
+  protected
+  public
+  published
+    procedure TestlazJSONRPCResponseCreate;
+  end;
+
 implementation
 
+{ TTestlazJSONRPCResponse }
+
+procedure TTestlazJSONRPCResponse.CheckFieldsCreate;
+begin
+  AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
+
+  AssertEquals('Response '+cjID+' is -1', -1, FResponse.ID);
+  AssertFalse('Response is not error', FResponse.IsError);
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreate;
+begin
+  FResponse:= TResponse.Create;
+  CheckFieldsCreate;
+  FResponse.Free;
+end;
+
+initialization
+  RegisterTest(TTestlazJSONRPCResponse);
 end.
 

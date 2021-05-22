@@ -47,6 +47,8 @@ type
     procedure CheckFieldsCreateNotification;
     procedure CheckFieldsCreateRequestEmpty;
     procedure CheckFieldsCreateWithMethod;
+  protected
+  public
   published
     procedure TestlazJSONRPCRequestCreate;
 
@@ -72,11 +74,10 @@ implementation
 
 uses
   LJD.JSON.Utils
-, Dialogs
 ;
 
 const
-  cjRequestEmpty : TJSONStringType =
+  cjRequestEmpty: TJSONStringType =
     '{'+
       '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
       '"'+ cjMethod +'":"",'+
@@ -84,35 +85,35 @@ const
       '"'+ cjID +'":1'+
     '}'
   ;
-  cjRequestMissingJSONRPC : TJSONStringType =
+  cjRequestMissingJSONRPC: TJSONStringType =
     '{'+
       '"'+ cjMethod +'":"",'+
       '"'+ cjParams +'":[],'+
       '"'+ cjID +'":1'+
     '}'
   ;
-  cjRequestMissingMethod : TJSONStringType =
+  cjRequestMissingMethod: TJSONStringType =
     '{'+
       '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
       '"'+ cjParams +'":[],'+
       '"'+ cjID +'":1'+
     '}'
   ;
-  cjRequestMissingParams : TJSONStringType =
+  cjRequestMissingParams: TJSONStringType =
     '{'+
       '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
       '"'+ cjMethod +'":"",'+
       '"'+ cjID +'":1'+
     '}'
   ;
-  cjRequestNotification : TJSONStringType =
+  cjRequestNotification: TJSONStringType =
     '{'+
       '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
       '"'+ cjMethod +'":"",'+
       '"'+ cjParams +'":[]'+
     '}'
   ;
-  cjRequestWithMethod : TJSONStringType =
+  cjRequestWithMethod: TJSONStringType =
     '{'+
       '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
       '"'+ cjMethod +'":"echo",'+

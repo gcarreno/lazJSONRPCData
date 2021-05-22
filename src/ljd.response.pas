@@ -28,9 +28,62 @@ unit LJD.Response;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes
+, SysUtils
+, fpjson
+;
+
+type
+{ TResponse }
+  TResponse = class(TObject)
+  private
+    FJSONRPC: TJSONStringType;
+
+    FID: Int64;
+
+    FIsError: Boolean;
+
+    FCompressedJSON: Boolean;
+  protected
+  public
+    constructor Create;
+
+    property JSONRPC: TJSONStringType
+      read FJSONRPC;
+
+    property ID: Int64
+      read FID
+      write FID;
+    property IsError: Boolean
+      read FIsError
+      write FIsError;
+
+    property CompressedJSON: Boolean
+      read FCompressedJSON
+      write FCompressedJSON;
+  published
+  end;
+
+const
+  cjJSONRPCversion = '2.0';
+
+  cjJSONRPC = 'jsonrpc';
+  cjResult = 'result';
+  cjError = 'error';
+  cjID = 'ID';
 
 implementation
+
+{ TResponse }
+
+constructor TResponse.Create;
+begin
+  FCompressedJSON:= True;
+  FJSONRPC:= cjJSONRPCversion;
+
+  FID:= -1;
+  FIsError:= False;
+end;
 
 end.
 

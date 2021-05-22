@@ -138,7 +138,7 @@ uses
   LJD.JSON.Utils
 ;
 
-{ TMethod }
+{ TRequest }
 
 procedure TRequest.setFromJSON(const AJSON: TJSONStringType);
 var

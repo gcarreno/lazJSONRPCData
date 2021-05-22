@@ -29,7 +29,7 @@ uses
   Classes
 , consoletestrunner
 , Test.LJD.Request
-//, Test.LJD.Response
+, Test.LJD.Response
 ;
 
 type

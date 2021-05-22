@@ -30,6 +30,7 @@ uses
 , Forms
 , GuiTestRunner
 , Test.LJD.Request
+, Test.LJD.Response
 ;
 
 {$R *.res}
