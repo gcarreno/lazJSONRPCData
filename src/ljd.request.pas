@@ -33,20 +33,6 @@ uses
 , fpjson
 ;
 
-const
-  cjJSONRPCversion = '2.0';
-
-  cjJSONRPC = 'jsonrpc';
-  cjMethod = 'method';
-  cjParams = 'params';
-  cjID = 'ID';
-
-resourcestring
-  rsExceptionNotAJSONObject = 'JSON Data is not an object';
-  rsExceptionEmptyString = 'MUST not be and empty string';
-  rsExceptionCannotParse = 'Cannot parse: %s';
-  rsExceptionMissingMember = 'Missing member: %s';
-
 type
 { ERequestNotAJSONObject }
   ERequestNotAJSONObject = Exception;
@@ -56,13 +42,19 @@ type
   ERequestCannotParse = Exception;
 { ERequestMissingMember }
   ERequestMissingMember = Exception;
+{ ERequestParamsWrongType }
+  ERequestParamsWrongType = Exception;
 
-{ TRequestParamsArray }
-  TRequestParamsArray = class(TObject)
+{ TRequestParametersType }
+  TRequestParametersType = (rptUnknown, rptArray, rptObject);
+
+{ TRequest }
+  TRequest = class(TObject)
   private
     FJSONRPC: TJSONStringType;
     FMethod: TJSONStringType;
-    FParams: TJSONArray;
+    FParamsType: TRequestParametersType;
+    FParams: TJSONData;
     FID: Int64;
     FNotification: Boolean;
 
@@ -96,7 +88,10 @@ type
     property Method: TJSONStringType
       read FMethod
       write FMethod;
-    property Params: TJSONArray
+    property ParamsType: TRequestParametersType
+      read FParamsType
+      write FParamsType;
+    property Params: TJSONData
       read FParams;
     property ID: Int64
       read FID
@@ -121,6 +116,20 @@ type
   published
   end;
 
+const
+  cjJSONRPCversion = '2.0';
+
+  cjJSONRPC = 'jsonrpc';
+  cjMethod = 'method';
+  cjParams = 'params';
+  cjID = 'ID';
+
+resourcestring
+  rsExceptionNotAJSONObject = 'JSON Data is not an object';
+  rsExceptionEmptyString = 'MUST not be and empty string';
+  rsExceptionCannotParse = 'Cannot parse: %s';
+  rsExceptionMissingMember = 'Missing member: %s';
+
 implementation
 
 uses
@@ -130,17 +139,21 @@ uses
 
 { TMethod }
 
-procedure TRequestParamsArray.setFromJSON(const AJSON: TJSONStringType);
+procedure TRequest.setFromJSON(const AJSON: TJSONStringType);
 var
   jData: TJSONData;
 begin
   if trim(AJSON) = EmptyStr then
+  begin
     raise ERequestEmptyString.Create(rsExceptionEmptyString);
+  end;
   try
     jData:= GetJSONData(AJSON);
   except
     on E: Exception do
+    begin
       raise ERequestCannotParse.Create(Format(rsExceptionCannotParse, [E.Message]));
+    end;
   end;
   try
     setFromJSONData(jData);
@@ -149,7 +162,7 @@ begin
   end;
 end;
 
-procedure TRequestParamsArray.setFromJSONData(const AJSONData: TJSONData);
+procedure TRequest.setFromJSONData(const AJSONData: TJSONData);
 begin
   if aJSONData.JSONType <> jtObject then
   begin
@@ -158,11 +171,9 @@ begin
   setFromJSONObject(aJSONData as TJSONObject);
 end;
 
-procedure TRequestParamsArray.setFromJSONObject(const AJSONObject: TJSONObject);
+procedure TRequest.setFromJSONObject(const AJSONObject: TJSONObject);
 var
   jData: TJSONData;
-  jParams: TJSONArray;
-  index: Integer;
 begin
   jData := AJSONObject.Find(cjJSONRPC);
   if Assigned(jData) then
@@ -170,7 +181,9 @@ begin
     FJSONRPC:= AJSONObject.Get(cjJSONRPC, FJSONRPC);
   end
   else
+  begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjJSONRPC]));
+  end;
 
   jData := AJSONObject.Find(cjMethod);
   if Assigned(jData) then
@@ -178,23 +191,26 @@ begin
     FMethod:= AJSONObject.Get(cjMethod, FMethod);
   end
   else
+  begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjMethod]));
+  end;
 
   jData:= AJSONObject.Find(cjParams);
   if Assigned(jData) then
   begin
-    if jData.JSONType = jtArray then
-    begin
-      jParams:= TJSONArray(jData);
-      FParams.Clear;
-      for index:= 0 to Pred(jParams.Count) do
-      begin
-        FParams.Add(jParams[index]);
-      end;
+    //FParams.Free;
+    FParams:= jData;
+    case jData.JSONType of
+      jtArray: FParamsType:= rptArray;
+      jtObject: FParamsType:= rptObject;
+      otherwise
+        FParamsType:= rptUnknown;
     end;
   end
   else
+  begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjParams]));
+  end;
 
   jData:= AJSONObject.Find(cjID);
   if Assigned(jData) then
@@ -202,20 +218,26 @@ begin
     FID:= AJSONObject.Get(cjID, FID);
   end
   else
+  begin
     FNotification:= True;
+  end;
 end;
 
-procedure TRequestParamsArray.setFromStream(const AStream: TStream);
+procedure TRequest.setFromStream(const AStream: TStream);
 var
   jData: TJSONData;
 begin
   if AStream.Size = 0 then
+  begin
     raise ERequestEmptyString.Create(rsExceptionEmptyString);
+  end;
   try
     jData:= GetJSONData(AStream);
   except
     on E: Exception do
+    begin
       raise ERequestCannotParse.Create(Format(rsExceptionCannotParse, [E.Message]));
+    end;
   end;
   try
     setFromJSONData(jData);
@@ -224,7 +246,7 @@ begin
   end;
 end;
 
-function TRequestParamsArray.getAsJSON: TJSONStringType;
+function TRequest.getAsJSON: TJSONStringType;
 var
   jObject: TJSONObject;
 begin
@@ -234,67 +256,70 @@ begin
   Result:= jObject.AsJSON;
 end;
 
-function TRequestParamsArray.getAsJSONData: TJSONData;
+function TRequest.getAsJSONData: TJSONData;
 begin
   Result:= getAsJSONObject as TJSONData;
 end;
 
-function TRequestParamsArray.getAsJSONObject: TJSONObject;
+function TRequest.getAsJSONObject: TJSONObject;
 begin
   Result:= TJSONObject.Create;
   Result.Add(cjJSONRPC, cjJSONRPCversion);
   Result.Add(cjMethod, FMethod);
   Result.Add(cjParams, FParams);
   if not FNotification then
+  begin
     Result.Add(cjID, FID);
+  end;
 end;
 
-function TRequestParamsArray.getAsStream: TStream;
+function TRequest.getAsStream: TStream;
 begin
   Result:= TStringStream.Create(getAsJSON);
 end;
 
-function TRequestParamsArray.FormatJSON(AOptions: TFormatOptions;
+function TRequest.FormatJSON(AOptions: TFormatOptions;
   AIndentsize: Integer): TJSONStringType;
 begin
   Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
 end;
 
-constructor TRequestParamsArray.Create;
+constructor TRequest.Create;
 begin
   FCompressedJSON:= True;
   FJSONRPC:= cjJSONRPCversion;
   FMethod:= EmptyStr;
-  FParams:= TJSONArray.Create;
+  FParamsType:= rptUnknown;
+  FParams:= nil;
   FID:= -1;
   FNotification:= False;
 end;
 
-constructor TRequestParamsArray.Create(const AJSON: TJSONStringType);
+constructor TRequest.Create(const AJSON: TJSONStringType);
 begin
   Create;
   setFromJSON(AJSON);
 end;
 
-constructor TRequestParamsArray.Create(const AJSONData: TJSONData);
+constructor TRequest.Create(const AJSONData: TJSONData);
 begin
   Create;
   setFromJSONData(AJSONData);
 end;
 
-constructor TRequestParamsArray.Create(const AJSONObject: TJSONObject);
+constructor TRequest.Create(const AJSONObject: TJSONObject);
 begin
   Create;
   setFromJSONObject(AJSONObject);
 end;
 
-constructor TRequestParamsArray.Create(const AStream: TStream);
+constructor TRequest.Create(const AStream: TStream);
 begin
   Create;
   setFromStream(AStream);
 end;
 
-destructor TRequestParamsArray.Destroy;
+destructor TRequest.Destroy;
 begin
   inherited Destroy;
 end;
