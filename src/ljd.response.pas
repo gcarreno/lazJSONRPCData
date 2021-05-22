@@ -31,6 +31,7 @@ uses
   Classes
 , SysUtils
 , fpjson
+, LJD.Error
 ;
 
 type
@@ -38,10 +39,11 @@ type
   TResponse = class(TObject)
   private
     FJSONRPC: TJSONStringType;
-
+    FResult: TJSONStringType;
+    FHasError: Boolean;
+    FError: TError;
+    FIDIsNull: Boolean;
     FID: Int64;
-
-    FIsError: Boolean;
 
     FCompressedJSON: Boolean;
   protected
@@ -50,13 +52,20 @@ type
 
     property JSONRPC: TJSONStringType
       read FJSONRPC;
-
+    property Result: TJSONStringType
+      read FResult
+      write FResult;
+    property HasError: Boolean
+      read FHasError
+      write FHasError;
+    property Error: TError
+      read FError;
+    property IDIsNull: Boolean
+      read FIDIsNull
+      write FIDIsNull;
     property ID: Int64
       read FID
       write FID;
-    property IsError: Boolean
-      read FIsError
-      write FIsError;
 
     property CompressedJSON: Boolean
       read FCompressedJSON
@@ -85,9 +94,11 @@ begin
   FCompressedJSON:= True;
 
   FJSONRPC:= cjJSONRPCversion;
-
+  FResult:= EmptyStr;
+  FHasError:= False;
+  FError:= nil;
+  FIDIsNull:= False;
   FID:= -1;
-  FIsError:= False;
 end;
 
 end.

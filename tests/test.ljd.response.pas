@@ -57,9 +57,11 @@ implementation
 procedure TTestlazJSONRPCResponse.CheckFieldsCreate;
 begin
   AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
-
+  AssertEquals('Response '+cjResult+' is Empty', EmptyStr, FResponse.Result);
+  AssertFalse('Response Has Error is False', FResponse.HasError);
+  AssertNull('Response '+cjError+' is null', FResponse.Error);
   AssertEquals('Response '+cjID+' is -1', -1, FResponse.ID);
-  AssertFalse('Response is not error', FResponse.IsError);
+  //AssertEquals('Response '+cj+' is ', , );
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreate;

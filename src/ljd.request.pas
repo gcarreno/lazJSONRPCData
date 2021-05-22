@@ -140,6 +140,11 @@ uses
 
 { TRequest }
 
+function TRequest.GetParams: TJSONData;
+begin
+  Result := GetJSONData(FParams);
+end;
+
 procedure TRequest.setFromJSON(const AJSON: TJSONStringType);
 var
   jData: TJSONData;
@@ -163,11 +168,6 @@ begin
   end;
 end;
 
-function TRequest.GetParams: TJSONData;
-begin
-  Result := GetJSONData(FParams);
-end;
-
 procedure TRequest.setFromJSONData(const AJSONData: TJSONData);
 begin
   if aJSONData.JSONType <> jtObject then
@@ -181,6 +181,7 @@ procedure TRequest.setFromJSONObject(const AJSONObject: TJSONObject);
 var
   jData: TJSONData;
 begin
+  // JSONRPC
   jData := AJSONObject.Find(cjJSONRPC);
   if Assigned(jData) then
   begin
@@ -190,7 +191,7 @@ begin
   begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjJSONRPC]));
   end;
-
+  // Method
   jData := AJSONObject.Find(cjMethod);
   if Assigned(jData) then
   begin
@@ -200,7 +201,7 @@ begin
   begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjMethod]));
   end;
-
+  // Params
   jData:= AJSONObject.Find(cjParams);
   if Assigned(jData) then
   begin
@@ -216,7 +217,7 @@ begin
   begin
     raise ERequestMissingMember.Create(Format(rsExceptionMissingMember, [cjParams]));
   end;
-
+  // ID
   jData:= AJSONObject.Find(cjID);
   if Assigned(jData) then
   begin
@@ -280,7 +281,7 @@ end;
 
 function TRequest.getAsStream: TStream;
 begin
-  Result:= TStringStream.Create(getAsJSON);
+  Result:= TStringStream.Create(getAsJSON, TEncoding.UTF8);
 end;
 
 function TRequest.FormatJSON(AOptions: TFormatOptions;
