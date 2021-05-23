@@ -1,0 +1,43 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ljd.error.rserrormessageinternalerror
+msgid "Internal Error"
+msgstr ""
+
+#: ljd.error.rserrormessageinvalidparams
+msgid "Invalid params"
+msgstr ""
+
+#: ljd.error.rserrormessageinvalidrequest
+msgid "Invalid request"
+msgstr ""
+
+#: ljd.error.rserrormessagemethodnotfound
+msgid "Method not found"
+msgstr ""
+
+#: ljd.error.rserrormessageparseerror
+msgid "Parse error"
+msgstr ""
+
+#: ljd.error.rsexceptioncannotparse
+msgid "Cannot parse: %s"
+msgstr ""
+
+#: ljd.error.rsexceptionemptystring
+msgid "MUST not be and empty string"
+msgstr ""
+
+#: ljd.error.rsexceptionmissingmember
+msgid "Missing member: %s"
+msgstr ""
+
+#: ljd.error.rsexceptionnotajsonobject
+msgid "JSON Data is not an object"
+msgstr ""
+
+#: ljd.error.rsexceptionwrongmembertype
+msgid "Wrong type in member: %s"
+msgstr ""
+

@@ -1,0 +1,19 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ljd.request.rsexceptioncannotparse
+msgid "Cannot parse: %s"
+msgstr ""
+
+#: ljd.request.rsexceptionemptystring
+msgid "MUST not be and empty string"
+msgstr ""
+
+#: ljd.request.rsexceptionmissingmember
+msgid "Missing member: %s"
+msgstr ""
+
+#: ljd.request.rsexceptionnotajsonobject
+msgid "JSON Data is not an object"
+msgstr ""
+
