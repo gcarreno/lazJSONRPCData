@@ -44,30 +44,140 @@ type
     FResponse: TResponse;
 
     procedure CheckFieldsCreate;
+    procedure CheckFieldsCreateEmpty;
   protected
   public
   published
     procedure TestlazJSONRPCResponseCreate;
+
+    procedure TestlazJSONRPCResponseCreateFromJSON;
+    procedure TestlazJSONRPCResponseCreateFromJSONData;
+    procedure TestlazJSONRPCResponseCreateFromJSONObject;
+    procedure TestlazJSONRPCResponseCreateFromStream;
+
+    procedure TestlazJSONRPCResponseAsJSON;
+    procedure TestlazJSONRPCResponseAsJSONData;
+    procedure TestlazJSONRPCResponseAsJSONObject;
+    procedure TestlazJSONRPCResponseAsStream;
   end;
 
 implementation
+
+uses
+  LJD.JSON.Utils
+;
+
+const
+  cjResponseEmpty: TJSONStringType =
+    '{'+
+      '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
+      '"'+ cjResult +'":"",'+
+      '"'+ cjID +'":1'+
+    '}'
+  ;
+  cjResponseErrorEmpty: TJSONStringType =
+    '{'+
+      '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
+      '"'+ cjError +'":{"code":0,"message":""},'+
+      '"'+ cjID +'":1'+
+    '}'
+  ;
+  cjResponseErrorIdNullEmpty: TJSONStringType =
+    '{'+
+      '"'+ cjJSONRPC +'":"'+cjJSONRPCversion+'",'+
+      '"'+ cjError +'":{"code":0,"message":""},'+
+      '"'+ cjID +'":null'+
+    '}'
+  ;
 
 { TTestlazJSONRPCResponse }
 
 procedure TTestlazJSONRPCResponse.CheckFieldsCreate;
 begin
   AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
+  AssertTrue('Response Has '+cjResult+' is True', FResponse.HasResult);
   AssertEquals('Response '+cjResult+' is Empty', EmptyStr, FResponse.Result);
-  AssertFalse('Response Has Error is False', FResponse.HasError);
+  AssertFalse('Response Has '+cjError+' is False', FResponse.HasError);
   AssertNull('Response '+cjError+' is null', FResponse.Error);
   AssertEquals('Response '+cjID+' is -1', -1, FResponse.ID);
   //AssertEquals('Response '+cj+' is ', , );
+end;
+
+procedure TTestlazJSONRPCResponse.CheckFieldsCreateEmpty;
+begin
+  AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
+  AssertTrue('Response Has '+cjResult+' is True', FResponse.HasResult);
+  AssertEquals('Response '+cjResult+' is Empty', EmptyStr, FResponse.Result);
+  AssertFalse('Response Has '+cjError+' is False', FResponse.HasError);
+  AssertNull('Response '+cjError+' is null', FResponse.Error);
+  AssertEquals('Response '+cjID+' is 1', 1, FResponse.ID);
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreate;
 begin
   FResponse:= TResponse.Create;
   CheckFieldsCreate;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSON;
+begin
+  FResponse:= TResponse.Create(cjResponseEmpty);
+  CheckFieldsCreateEmpty;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSONData;
+begin
+  FResponse:= TResponse.Create(GetJSONData(cjResponseEmpty));
+  CheckFieldsCreateEmpty;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSONObject;
+begin
+  FResponse:= TResponse.Create(TJSONObject(GetJSONData(cjResponseEmpty)));
+  CheckFieldsCreateEmpty;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromStream;
+begin
+  FResponse:= TResponse.Create(TStringStream.Create(cjResponseEmpty, TEncoding.UTF8));
+  CheckFieldsCreateEmpty;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSON;
+begin
+  FResponse:= TResponse.Create(cjResponseEmpty);
+  AssertEquals('Response AsJSON matches', cjResponseEmpty, FResponse.AsJSON);
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONData;
+begin
+  FResponse:= TResponse.Create(cjResponseEmpty);
+  AssertEquals('Response AsJSONData matches', cjResponseEmpty, FResponse.AsJSONData.AsJSON);
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONObject;
+begin
+  FResponse:= TResponse.Create(cjResponseEmpty);
+  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, FResponse.AsJSONObject.AsJSON);
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsStream;
+var
+  ssResponse: TStringStream;
+begin
+  FResponse:= TResponse.Create(cjResponseEmpty);
+  ssResponse:= TStringStream.Create('', TEncoding.UTF8);
+  ssResponse.LoadFromStream(FResponse.AsStream);
+  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, ssResponse.DataString);
+  ssResponse.Free;
   FResponse.Free;
 end;
 
