@@ -1,0 +1,31 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.4.3\n"
+"Last-Translator: Fechi92 <fechi1712@gmail.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: de\n"
+
+#: ljd.request.rsexceptioncannotparse
+#, object-pascal-format
+msgid "Cannot parse: %s"
+msgstr "Kann nicht geparst werden: %s"
+
+#: ljd.request.rsexceptionemptystring
+msgid "MUST not be and empty string"
+msgstr "MUSS kein leerer String sein"
+
+#: ljd.request.rsexceptionmissingmember
+#, object-pascal-format
+msgid "Missing member: %s"
+msgstr "Fehlendes Mitglied: %s"
+
+#: ljd.request.rsexceptionnotajsonobject
+msgid "JSON Data is not an object"
+msgstr "JSON-Daten sind kein Objekt"
