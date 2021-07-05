@@ -31,6 +31,7 @@ uses
   Classes
 , SysUtils
 , fpjson
+, jsonparser
 ;
 
 type
@@ -134,10 +135,6 @@ resourcestring
 
 implementation
 
-uses
-  LJD.JSON.Utils
-;
-
 { TError }
 
 procedure TError.setFromJSON(const AJSON: TJSONStringType);
@@ -149,7 +146,7 @@ begin
     raise EErrorEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AJSON);
+    jData:= GetJSON(AJSON);
   except
     on E: Exception do
     begin
@@ -243,7 +240,7 @@ begin
     raise EErrorEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AStream);
+    jData:= GetJSON(AStream);
   except
     on E: Exception do
     begin
