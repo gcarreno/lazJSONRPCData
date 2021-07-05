@@ -24,6 +24,6 @@ jobs:
       with:
         lazarus-version: ${{ matrix.lazarus-versions }}
     - name: Build the Test App
-      run: lazbuild -B --bm=Release "tests/TestlazJSONRPCDataCLI.lpi"
+      run: lazbuild -B --bm=Debug "tests/TestlazJSONRPCDataCLI.lpi"
     - name: Run the Test App
       run: bin/TestlazJSONRPCDataCLI "--all" "--format=plain"
