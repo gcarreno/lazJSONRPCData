@@ -55,7 +55,7 @@ type
 
     FCompressedJSON: Boolean;
 
-    procedure SetData(AValue: TJSONStringType);
+    procedure setData(AValue: TJSONStringType);
     procedure setFromJSON(const AJSON: TJSONStringType);
     procedure setFromJSONData(const AJSONData: TJSONData);
     procedure setFromJSONObject(const AJSONObject: TJSONObject);
@@ -87,7 +87,7 @@ type
       write FMessage;
     property Data: TJSONStringType
       read FData
-      write SetData;
+      write setData;
 
     property HasData: Boolean
       read FHasData;
@@ -163,7 +163,7 @@ begin
   end;
 end;
 
-procedure TError.SetData(AValue: TJSONStringType);
+procedure TError.setData(AValue: TJSONStringType);
 begin
   if FData=AValue then Exit;
   FData:=AValue;
@@ -184,7 +184,7 @@ var
   jData: TJSONData;
 begin
   // Code
-  jData:= AJSONObject.Find(cjCode);
+  jData:= AJSONObject.FindPath(cjCode);
   if Assigned(jData) then
   begin
     if (jData.JSONType = jtNumber) and
@@ -202,7 +202,7 @@ begin
     raise EErrorMissingMember.Create(Format(rsExceptionMissingMember,[cjCode]));
   end;
   // Message
-  jData:= AJSONObject.Find(cjMessage);
+  jData:= AJSONObject.FindPath(cjMessage);
   if Assigned(jData) then
   begin
     if jData.JSONType = jtString then
@@ -219,7 +219,7 @@ begin
     raise EErrorMissingMember.Create(Format(rsExceptionMissingMember,[cjMessage]));
   end;
   // Data
-  jData:= AJSONObject.Find(cjData);
+  jData:= AJSONObject.FindPath(cjData);
   if Assigned(jData) then
   begin
     if jData.JSONType = jtString then
@@ -265,6 +265,7 @@ begin
   jObject:= getAsJSONObject;
   jObject.CompressedJSON:= FCompressedJSON;
   Result:= jObject.AsJSON;
+  jObject.Free;
 end;
 
 function TError.getAsJSONData: TJSONData;

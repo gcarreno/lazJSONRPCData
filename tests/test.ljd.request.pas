@@ -33,7 +33,6 @@ uses
 , fpcunit
 //, testutils
 , testregistry
-, fpjson
 , LJD.Request
 ;
 
@@ -58,9 +57,11 @@ type
 
     procedure TestlazJSONRPCRequestCreateNotification;
     procedure TestlazJSONRPCRequestCreateRequestEmpty;
+
     procedure TestlazJSONRPCRequestCreateExceptionEmptyString;
     procedure TestlazJSONRPCRequestCreateExceptionCannotParse;
     procedure TestlazJSONRPCRequestCreateExceptionMissingMembers;
+
     procedure TestlazJSONRPCRequestCreateWithMethod;
 
     procedure TestlazJSONRPCRequestAsJSON;
@@ -73,7 +74,8 @@ type
 implementation
 
 uses
-  LJD.JSON.Utils
+  fpjson
+, jsonparser
 ;
 
 const
@@ -170,22 +172,34 @@ begin
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromJSONData;
+var
+  jData: TJSONData = nil;
 begin
-  FRequest:= TRequest.Create(GetJSONData(cjRequestEmpty));
+  jData:= GetJSON(cjRequestEmpty);
+  FRequest:= TRequest.Create(jData);
+  jData.Free;
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromJSONObject;
+var
+  jData: TJSONData = nil;
 begin
-  FRequest:= TRequest.Create(TJSONObject(GetJSONData(cjRequestEmpty)));
+  jData:= GetJSON(cjRequestEmpty);
+  FRequest:= TRequest.Create(TJSONObject(jData));
+  jData.Free;
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestCreateFromStream;
+var
+  ssRequestEmpty: TStringStream = nil;
 begin
-  FRequest:= TRequest.Create(TStringStream.Create(cjRequestEmpty, TEncoding.UTF8));
+  ssRequestEmpty:= TStringStream.Create(cjRequestEmpty, TEncoding.UTF8);
+  FRequest:= TRequest.Create(ssRequestEmpty);
+  ssRequestEmpty.Free;
   CheckFieldsCreateRequestEmpty;
   FRequest.Free;
 end;
@@ -287,31 +301,42 @@ begin
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestAsJSONData;
+var
+  jData: TJSONData = nil;
 begin
   FRequest:= TRequest.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
-  AssertEquals('Request AsJSONData matches', cjRequestEmpty, FRequest.AsJSONData.AsJSON);
+  jData:= FRequest.AsJSONData;
+  AssertEquals('Request AsJSONData matches', cjRequestEmpty, jData.AsJSON);
+  jData.Free;
   FRequest.Free;
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestAsJSONObject;
+var
+  jObject: TJSONObject = nil;
 begin
   FRequest:= TRequest.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
-  AssertEquals('Request AsJSONObject matches', cjRequestEmpty, FRequest.AsJSONObject.AsJSON);
+  jObject:= FRequest.AsJSONObject;
+  AssertEquals('Request AsJSONObject matches', cjRequestEmpty, jObject.AsJSON);
+  jObject.Free;
   FRequest.Free;
 end;
 
 procedure TTestlazJSONRPCRequest.TestlazJSONRPCRequestAsStream;
 var
-  ssRequest: TStringStream;
+  ssRequestEmpty: TStringStream;
+  sRequestEmpty: TStream;
 begin
   FRequest:= TRequest.Create(cjRequestEmpty);
   AssertFalse('Request is not a notification', FRequest.Notification);
-  ssRequest:= TStringStream.Create('', TEncoding.UTF8);
-  ssRequest.LoadFromStream(FRequest.AsStream);
-  AssertEquals('Request AsStream matches', cjRequestEmpty, ssRequest.DataString);
-  ssRequest.Free;
+  ssRequestEmpty:= TStringStream.Create('', TEncoding.UTF8);
+  sRequestEmpty:= FRequest.AsStream;
+  ssRequestEmpty.LoadFromStream(sRequestEmpty);
+  sRequestEmpty.Free;
+  AssertEquals('Request AsStream matches', cjRequestEmpty, ssRequestEmpty.DataString);
+  ssRequestEmpty.Free;
   FRequest.Free;
 end;
 

@@ -31,6 +31,7 @@ uses
   Classes
 , SysUtils
 , fpjson
+, jsonparser
 ;
 
 type
@@ -54,13 +55,11 @@ type
     FJSONRPC: TJSONStringType;
     FMethod: TJSONStringType;
     FParamsType: TRequestParametersType;
-    FParams: TJSONStringType;
+    FParams: TJSONData;
     FID: Int64;
     FNotification: Boolean;
 
     FCompressedJSON: Boolean;
-
-    function GetParams: TJSONData;
 
     procedure setFromJSON(const AJSON: TJSONStringType);
     procedure setFromJSONData(const AJSONData: TJSONData);
@@ -94,7 +93,7 @@ type
       read FParamsType
       write FParamsType;
     property Params: TJSONData
-      read GetParams;
+      read FParams;
     property ID: Int64
       read FID
       write FID;
@@ -134,16 +133,7 @@ resourcestring
 
 implementation
 
-uses
-  LJD.JSON.Utils
-;
-
 { TRequest }
-
-function TRequest.GetParams: TJSONData;
-begin
-  Result := GetJSONData(FParams);
-end;
 
 procedure TRequest.setFromJSON(const AJSON: TJSONStringType);
 var
@@ -154,7 +144,7 @@ begin
     raise ERequestEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AJSON);
+    jData:= GetJSON(AJSON);
   except
     on E: Exception do
     begin
@@ -205,7 +195,7 @@ begin
   jData:= AJSONObject.Find(cjParams);
   if Assigned(jData) then
   begin
-    FParams:= jData.AsJSON;
+    FParams:= jData.Clone;
     case jData.JSONType of
       jtArray: FParamsType:= rptArray;
       jtObject: FParamsType:= rptObject;
@@ -238,7 +228,7 @@ begin
     raise ERequestEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AStream);
+    jData:= GetJSON(AStream);
   except
     on E: Exception do
     begin
@@ -260,6 +250,7 @@ begin
   jObject:= getAsJSONObject;
   jObject.CompressedJSON:= FCompressedJSON;
   Result:= jObject.AsJSON;
+  jObject.Free;
 end;
 
 function TRequest.getAsJSONData: TJSONData;
@@ -272,7 +263,14 @@ begin
   Result:= TJSONObject.Create;
   Result.Add(cjJSONRPC, cjJSONRPCversion);
   Result.Add(cjMethod, FMethod);
-  Result.Add(cjParams, GetJSONData(FParams));
+  if Assigned(FParams) then
+  begin
+    Result.Add(cjParams, FParams.Clone);
+  end
+  else
+  begin
+    Result.Add(cjParams, TJSONArray.Create);
+  end;
   if not FNotification then
   begin
     Result.Add(cjID, FID);
@@ -297,7 +295,7 @@ begin
   FJSONRPC:= cjJSONRPCversion;
   FMethod:= EmptyStr;
   FParamsType:= rptUnknown;
-  FParams:= EmptyStr;
+  FParams:= nil;
   FID:= -1;
   FNotification:= False;
 end;
@@ -328,6 +326,10 @@ end;
 
 destructor TRequest.Destroy;
 begin
+  if Assigned(FParams) then
+  begin
+    FParams.Free;
+  end;
   inherited Destroy;
 end;
 

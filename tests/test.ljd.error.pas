@@ -33,7 +33,6 @@ uses
 , fpcunit
 //, testutils
 , testregistry
-, fpjson
 , LJD.Error
 ;
 
@@ -67,17 +66,18 @@ type
 implementation
 
 uses
-  LJD.JSON.Utils
+  fpjson
+, jsonparser
 ;
 
 const
-  cjErrorEmpty =
+  cjErrorEmpty: TJSONStringType =
     '{'+
       '"'+cjCode+'":0,'+
       '"'+cjMessage+'":""'+
     '}'
   ;
-  cjErrorEmptyWithData =
+  cjErrorEmptyWithData: TJSONStringType =
     '{'+
       '"'+cjCode+'":0,'+
       '"'+cjMessage+'":"",'+
@@ -127,22 +127,34 @@ begin
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorCreateFromJSONData;
+var
+  jData: TJSONData = nil;
 begin
-  FError:= TError.Create(GetJSONData(cjErrorEmpty));
+  jData:= GetJSON(cjErrorEmpty);
+  FError:= TError.Create(jData);
+  jData.Free;
   CheckFieldsCreateEmpty;
   FError.Free;
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorCreateFromJSONObject;
+var
+  jData: TJSONData = nil;
 begin
-  FError:= TError.Create(TJSONObject(GetJSONData(cjErrorEmpty)));
+  jData:= GetJSON(cjErrorEmpty);
+  FError:= TError.Create(TJSONObject(jData));
+  jData.Free;
   CheckFieldsCreateEmpty;
   FError.Free;
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorCreateFromStream;
+var
+  ssErrorEmpty: TStringStream = nil;
 begin
-  FError:= TError.Create(TStringStream.Create(cjErrorEmpty, TEncoding.UTF8));
+  ssErrorEmpty:= TStringStream.Create(cjErrorEmpty, TEncoding.UTF8);
+  FError:= TError.Create(ssErrorEmpty);
+  ssErrorEmpty.Free;
   CheckFieldsCreateEmpty;
   FError.Free;
 end;
@@ -162,28 +174,39 @@ begin
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorAsJSONData;
+var
+  jData: TJSONData = nil;
 begin
   FError:= TError.Create(cjErrorEmpty);
-  AssertEquals('Error Object AsJSONData matches', cjErrorEmpty, FError.AsJSONData.AsJSON);
+  jData:= FError.AsJSONData;
+  AssertEquals('Error Object AsJSONData matches', cjErrorEmpty, jData.AsJSON);
+  jData.Free;
   FError.Free;
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorAsJSONObject;
+var
+  jObject: TJSONObject = nil;
 begin
   FError:= TError.Create(cjErrorEmpty);
-  AssertEquals('Error Object AsJSONObject matches', cjErrorEmpty, FError.AsJSONObject.AsJSON);
+  jObject:= FError.AsJSONObject;
+  AssertEquals('Error Object AsJSONObject matches', cjErrorEmpty, jObject.AsJSON);
+  jObject.Free;
   FError.Free;
 end;
 
 procedure TTestlazJSONRPCError.TestlazJSONRPCErrorAsStream;
 var
-  ssError: TStringStream;
+  ssErrorEmpty: TStringStream = nil;
+  sErrorEmpty: TStream = nil;
 begin
   FError:= TError.Create(cjErrorEmpty);
-  ssError:= TStringStream.Create('', TEncoding.UTF8);
-  ssError.LoadFromStream(FError.AsStream);
-  AssertEquals('Error Object AsStream matches', cjErrorEmpty, ssError.DataString);
-  ssError.Free;
+  ssErrorEmpty:= TStringStream.Create('', TEncoding.UTF8);
+  sErrorEmpty:= FError.AsStream;
+  ssErrorEmpty.LoadFromStream(sErrorEmpty);
+  sErrorEmpty.Free;
+  AssertEquals('Error Object AsStream matches', cjErrorEmpty, ssErrorEmpty.DataString);
+  ssErrorEmpty.Free;
   FError.Free;
 end;
 

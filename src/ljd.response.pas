@@ -31,6 +31,7 @@ uses
   Classes
 , SysUtils
 , fpjson
+, jsonparser
 , LJD.Error
 ;
 
@@ -51,7 +52,7 @@ type
   private
     FJSONRPC: TJSONStringType;
     FHasResult: Boolean;
-    FResult: TJSONStringType;
+    FResult: TJSONData;
     FHasError: Boolean;
     FError: TError;
     FIDIsNull: Boolean;
@@ -83,9 +84,8 @@ type
       read FJSONRPC;
     property HasResult: Boolean
       read FHasResult;
-    property Result: TJSONStringType
-      read FResult
-      write FResult;
+    property Result: TJSONData
+      read FResult;
     property HasError: Boolean
       read FHasError;
     property Error: TError
@@ -131,10 +131,6 @@ resourcestring
 
 implementation
 
-uses
-  LJD.JSON.Utils
-;
-
 { TResponse }
 
 procedure TResponse.setFromJSON(const AJSON: TJSONStringType);
@@ -146,7 +142,7 @@ begin
     raise EResponseEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AJSON);
+    jData:= GetJSON(AJSON);
   except
     on E: Exception do
     begin
@@ -200,15 +196,8 @@ begin
   // Result
   if (jResult <> nil) and (jError = nil) then
   begin
-    if jResult.JSONType = jtString then
-    begin
-      FResult:= AJSONObject.Get(cjResult, FResult);
-      FHasError:= False;
-    end
-    else
-    begin
-      raise EResponseWrongMemberType.Create(Format(rsExceptionWrongMemberType, [cjResult]));
-    end;
+    FResult:= jResult.Clone;
+    FHasError:= False;
   end;
   if (jResult = nil) and (jError <> nil) then
   begin
@@ -271,7 +260,7 @@ begin
     raise EResponseEmptyString.Create(rsExceptionEmptyString);
   end;
   try
-    jData:= GetJSONData(AStream);
+    jData:= GetJSON(AStream);
   except
     on E: Exception do
     begin
@@ -293,6 +282,7 @@ begin
   jObject:= getAsJSONObject;
   jObject.CompressedJSON:= FCompressedJSON;
   Result:= jObject.AsJSON;
+  jObject.Free;
 end;
 
 function TResponse.getAsJSONData: TJSONData;
@@ -306,7 +296,7 @@ begin
   Result.Add(cjJSONRPC, cjJSONRPCversion);
   if FHasResult then
   begin
-    Result.Add(cjResult, FResult);
+    Result.Add(cjResult, FResult.Clone);
   end;
   if FHasError then
   begin
@@ -329,7 +319,7 @@ begin
 
   FJSONRPC:= cjJSONRPCversion;
   FHasResult:= True;
-  FResult:= EmptyStr;
+  FResult:= nil;
   FHasError:= False;
   FError:= nil;
   FIDIsNull:= False;
@@ -362,6 +352,14 @@ end;
 
 destructor TResponse.Destroy;
 begin
+  if FHasResult then
+  begin
+    FResult.Free;
+  end;
+  if FHasError then
+  begin
+    FError.Free;
+  end;
   inherited Destroy;
 end;
 

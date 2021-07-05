@@ -31,7 +31,7 @@ uses
 , GuiTestRunner
 , Test.LJD.Request
 , Test.LJD.Response
-, Test.LJD.Error, LJD.Error
+, Test.LJD.Error
 ;
 
 {$R *.res}

@@ -33,7 +33,6 @@ uses
 , fpcunit
 //, testutils
 , testregistry
-, fpjson
 , LJD.Response
 ;
 
@@ -64,7 +63,8 @@ type
 implementation
 
 uses
-  LJD.JSON.Utils
+  fpjson
+, jsonparser
 ;
 
 const
@@ -96,7 +96,7 @@ procedure TTestlazJSONRPCResponse.CheckFieldsCreate;
 begin
   AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
   AssertTrue('Response Has '+cjResult+' is True', FResponse.HasResult);
-  AssertEquals('Response '+cjResult+' is Empty', EmptyStr, FResponse.Result);
+  AssertNull('Response '+cjResult+' is null', FResponse.Result);
   AssertFalse('Response Has '+cjError+' is False', FResponse.HasError);
   AssertNull('Response '+cjError+' is null', FResponse.Error);
   AssertEquals('Response '+cjID+' is -1', -1, FResponse.ID);
@@ -107,7 +107,7 @@ procedure TTestlazJSONRPCResponse.CheckFieldsCreateEmpty;
 begin
   AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
   AssertTrue('Response Has '+cjResult+' is True', FResponse.HasResult);
-  AssertEquals('Response '+cjResult+' is Empty', EmptyStr, FResponse.Result);
+  AssertNotNull('Response '+cjResult+' is not null', FResponse.Result);
   AssertFalse('Response Has '+cjError+' is False', FResponse.HasError);
   AssertNull('Response '+cjError+' is null', FResponse.Error);
   AssertEquals('Response '+cjID+' is 1', 1, FResponse.ID);
@@ -128,22 +128,34 @@ begin
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSONData;
+var
+  jData: TJSONData = nil;
 begin
-  FResponse:= TResponse.Create(GetJSONData(cjResponseEmpty));
+  jData:= GetJSON(cjResponseEmpty);
+  FResponse:= TResponse.Create(jData);
+  jData.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSONObject;
+var
+  jData: TJSONData = nil;
 begin
-  FResponse:= TResponse.Create(TJSONObject(GetJSONData(cjResponseEmpty)));
+  jData:= GetJSON(cjResponseEmpty);
+  FResponse:= TResponse.Create(TJSONObject(jData));
+  jData.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromStream;
+var
+  ssRequestEmpty: TStringStream = nil;
 begin
-  FResponse:= TResponse.Create(TStringStream.Create(cjResponseEmpty, TEncoding.UTF8));
+  ssRequestEmpty:= TStringStream.Create(cjResponseEmpty, TEncoding.UTF8);
+  FResponse:= TResponse.Create(ssRequestEmpty);
+  ssRequestEmpty.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
 end;
@@ -156,28 +168,39 @@ begin
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONData;
+var
+  jData: TJSONData = nil;
 begin
   FResponse:= TResponse.Create(cjResponseEmpty);
-  AssertEquals('Response AsJSONData matches', cjResponseEmpty, FResponse.AsJSONData.AsJSON);
+  jData:= FResponse.AsJSONData;
+  AssertEquals('Response AsJSONData matches', cjResponseEmpty, jData.AsJSON);
+  jData.Free;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONObject;
+var
+  jObject: TJSONObject = nil;
 begin
   FResponse:= TResponse.Create(cjResponseEmpty);
-  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, FResponse.AsJSONObject.AsJSON);
+  jObject:= FResponse.AsJSONObject;
+  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, jObject.AsJSON);
+  jObject.Free;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsStream;
 var
-  ssResponse: TStringStream;
+  ssResponseEmpty: TStringStream;
+  sResponseEmpty: TStream;
 begin
   FResponse:= TResponse.Create(cjResponseEmpty);
-  ssResponse:= TStringStream.Create('', TEncoding.UTF8);
-  ssResponse.LoadFromStream(FResponse.AsStream);
-  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, ssResponse.DataString);
-  ssResponse.Free;
+  ssResponseEmpty:= TStringStream.Create('', TEncoding.UTF8);
+  sResponseEmpty:= FResponse.AsStream;
+  ssResponseEmpty.LoadFromStream(sResponseEmpty);
+  sResponseEmpty.Free;
+  AssertEquals('Response AsJSONObject matches', cjResponseEmpty, ssResponseEmpty.DataString);
+  ssResponseEmpty.Free;
   FResponse.Free;
 end;
 
