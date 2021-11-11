@@ -8,7 +8,7 @@ unit lazJSONRPCData;
 interface
 
 uses
-  LJD.JSON.Utils, LJD.Error, LJD.Request, LJD.Response;
+  LJD.Error, LJD.Request, LJD.Response;
 
 implementation
 

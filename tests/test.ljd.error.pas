@@ -67,7 +67,6 @@ implementation
 
 uses
   fpjson
-, jsonparser
 ;
 
 const

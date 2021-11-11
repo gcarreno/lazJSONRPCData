@@ -35,23 +35,19 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 "/>
     <Version Minor="1"/>
-    <Files Count="4">
+    <Files Count="3">
       <Item1>
-        <Filename Value="../src/json/ljd.json.utils.pas"/>
-        <UnitName Value="LJD.JSON.Utils"/>
-      </Item1>
-      <Item2>
         <Filename Value="../src/ljd.error.pas"/>
         <UnitName Value="LJD.Error"/>
-      </Item2>
-      <Item3>
+      </Item1>
+      <Item2>
         <Filename Value="../src/ljd.request.pas"/>
         <UnitName Value="LJD.Request"/>
-      </Item3>
-      <Item4>
+      </Item2>
+      <Item3>
         <Filename Value="../src/ljd.response.pas"/>
         <UnitName Value="LJD.Response"/>
-      </Item4>
+      </Item3>
     </Files>
     <CompatibilityMode Value="True"/>
     <i18n>
