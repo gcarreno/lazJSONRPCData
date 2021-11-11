@@ -1,0 +1,31 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: ljd.response.rsexceptioncannotparse
+#, object-pascal-format
+msgid "Cannot parse: %s"
+msgstr ""
+
+#: ljd.response.rsexceptionemptystring
+msgid "MUST not be and empty string"
+msgstr ""
+
+#: ljd.response.rsexceptionmissingmember
+#, object-pascal-format
+msgid "Missing member: %s"
+msgstr ""
+
+#: ljd.response.rsexceptionmissingmemberresultorerror
+#, object-pascal-format
+msgid "Missing one of: %s or %s"
+msgstr ""
+
+#: ljd.response.rsexceptionnotajsonobject
+msgid "JSON Data is not an object"
+msgstr ""
+
+#: ljd.response.rsexceptionwrongmembertype
+#, object-pascal-format
+msgid "Wrong type in member: %s"
+msgstr ""
+
