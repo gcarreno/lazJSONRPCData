@@ -91,11 +91,9 @@ type
     property Error: TError
       read FError;
     property IDIsNull: Boolean
-      read FIDIsNull
-      write FIDIsNull;
+      read FIDIsNull;
     property ID: Int64
-      read FID
-      write FID;
+      read FID;
 
     property CompressedJSON: Boolean
       read FCompressedJSON

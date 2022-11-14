@@ -85,7 +85,8 @@ type
       AIndentsize : Integer = DefaultIndentSize): TJSONStringType;
 
     property JSONRPC: TJSONStringType
-      read FJSONRPC;
+      read FJSONRPC
+      write FJSONRPC;
     property Method: TJSONStringType
       read FMethod
       write FMethod;
@@ -93,7 +94,8 @@ type
       read FParamsType
       write FParamsType;
     property Params: TJSONData
-      read FParams;
+      read FParams
+      write FParams;
     property ID: Int64
       read FID
       write FID;
