@@ -44,15 +44,19 @@ type
 
     procedure CheckFieldsCreate;
     procedure CheckFieldsCreateEmpty;
+    procedure CheckFieldsCreateErrorEmpty;
   protected
   public
   published
     procedure TestlazJSONRPCResponseCreate;
 
-    procedure TestlazJSONRPCResponseCreateFromJSON;
     procedure TestlazJSONRPCResponseCreateFromJSONData;
     procedure TestlazJSONRPCResponseCreateFromJSONObject;
     procedure TestlazJSONRPCResponseCreateFromStream;
+
+    procedure TestlazJSONRPCResponseCreateFromEmpty;
+    procedure TestlazJSONRPCResponseCreateFromErrorEmpty;
+
 
     procedure TestlazJSONRPCResponseAsJSON;
     procedure TestlazJSONRPCResponseAsJSONData;
@@ -112,6 +116,16 @@ begin
   AssertEquals('Response '+cjID+' is 1', 1, FResponse.ID);
 end;
 
+procedure TTestlazJSONRPCResponse.CheckFieldsCreateErrorEmpty;
+begin
+  AssertEquals('Response '+cjJSONRPC+' is '+cjJSONRPCversion, cjJSONRPCversion, FResponse.JSONRPC);
+  AssertFalse('Response Has '+cjResult+' is False', FResponse.HasResult);
+  AssertNull('Response '+cjResult+' is null', FResponse.Result);
+  AssertTrue('Response Has '+cjError+' is True', FResponse.HasError);
+  AssertNotNull('Response '+cjError+' is not null', FResponse.Error);
+  AssertEquals('Response '+cjID+' is 1', 1, FResponse.ID);
+end;
+
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreate;
 begin
   FResponse:= TResponse.Create;
@@ -119,10 +133,17 @@ begin
   FResponse.Free;
 end;
 
-procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromJSON;
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromEmpty;
 begin
   FResponse:= TResponse.Create(cjResponseEmpty);
   CheckFieldsCreateEmpty;
+  FResponse.Free;
+end;
+
+procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromErrorEmpty;
+begin
+  FResponse:= TResponse.Create(cjResponseErrorEmpty);
+  CheckFieldsCreateErrorEmpty;
   FResponse.Free;
 end;
 

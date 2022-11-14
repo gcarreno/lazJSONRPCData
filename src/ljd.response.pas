@@ -196,6 +196,7 @@ begin
   begin
     FResult:= jResult.Clone;
     FHasError:= False;
+    FHasResult:= True;
   end;
   if (jResult = nil) and (jError <> nil) then
   begin
@@ -208,6 +209,7 @@ begin
       end;
       FError:= TError.Create(jError);
       FHasError:= True;
+      FHasResult:= False;
     end
     else
     begin
