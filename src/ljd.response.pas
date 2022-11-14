@@ -119,7 +119,7 @@ const
   cjJSONRPC = 'jsonrpc';
   cjResult = 'result';
   cjError = 'error';
-  cjID = 'ID';
+  cjID = 'id';
 
 resourcestring
   rsExceptionNotAJSONObject = 'JSON Data is not an object';
