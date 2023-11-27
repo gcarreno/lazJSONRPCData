@@ -45,8 +45,8 @@ type
   EErrorMissingMember = Exception;
 { EErrorWrongMemberType }
   EErrorWrongMemberType = Exception;
-{ TError }
-  TError = class(TObject)
+{ TJSONRPCError }
+  TJSONRPCError = class(TObject)
   private
     FCode: Integer;
     FID: Integer;
@@ -137,7 +137,7 @@ implementation
 
 { TError }
 
-procedure TError.setFromJSON(const AJSON: TJSONStringType);
+procedure TJSONRPCError.setFromJSON(const AJSON: TJSONStringType);
 var
   jData: TJSONData;
 begin
@@ -160,14 +160,14 @@ begin
   end;
 end;
 
-procedure TError.setData(AValue: TJSONStringType);
+procedure TJSONRPCError.setData(AValue: TJSONStringType);
 begin
   if FData=AValue then Exit;
   FData:=AValue;
   FHasData:= Trim(AValue) <> EmptyStr;
 end;
 
-procedure TError.setFromJSONData(const AJSONData: TJSONData);
+procedure TJSONRPCError.setFromJSONData(const AJSONData: TJSONData);
 begin
   if aJSONData.JSONType <> jtObject then
   begin
@@ -176,7 +176,7 @@ begin
   setFromJSONObject(aJSONData as TJSONObject);
 end;
 
-procedure TError.setFromJSONObject(const AJSONObject: TJSONObject);
+procedure TJSONRPCError.setFromJSONObject(const AJSONObject: TJSONObject);
 var
   jData: TJSONData;
 begin
@@ -231,7 +231,7 @@ begin
   end;
 end;
 
-procedure TError.setFromStream(const AStream: TStream);
+procedure TJSONRPCError.setFromStream(const AStream: TStream);
 var
   jData: TJSONData;
 begin
@@ -254,7 +254,7 @@ begin
   end;
 end;
 
-function TError.getAsJSON: TJSONStringType;
+function TJSONRPCError.getAsJSON: TJSONStringType;
 var
   jObject: TJSONObject;
 begin
@@ -265,12 +265,12 @@ begin
   jObject.Free;
 end;
 
-function TError.getAsJSONData: TJSONData;
+function TJSONRPCError.getAsJSONData: TJSONData;
 begin
   Result:= getAsJSONObject as TJSONData;
 end;
 
-function TError.getAsJSONObject: TJSONObject;
+function TJSONRPCError.getAsJSONObject: TJSONObject;
 begin
   Result:= TJSONObject.Create;
   Result.Add(cjCode, FCode);
@@ -281,12 +281,12 @@ begin
   end;
 end;
 
-function TError.getAsStream: TStream;
+function TJSONRPCError.getAsStream: TStream;
 begin
   Result:= TStringStream.Create(getAsJSON, TEncoding.UTF8);
 end;
 
-constructor TError.Create;
+constructor TJSONRPCError.Create;
 begin
   FCompressedJSON:= True;
 
@@ -296,36 +296,36 @@ begin
   FHasData:= False;
 end;
 
-constructor TError.Create(const AJSON: TJSONStringType);
+constructor TJSONRPCError.Create(const AJSON: TJSONStringType);
 begin
   Create;
   setFromJSON(AJSON);
 end;
 
-constructor TError.Create(const AJSONData: TJSONData);
+constructor TJSONRPCError.Create(const AJSONData: TJSONData);
 begin
   Create;
   setFromJSONData(AJSONData);
 end;
 
-constructor TError.Create(const AJSONObject: TJSONObject);
+constructor TJSONRPCError.Create(const AJSONObject: TJSONObject);
 begin
   Create;
   setFromJSONObject(AJSONObject);
 end;
 
-constructor TError.Create(const AStream: TStream);
+constructor TJSONRPCError.Create(const AStream: TStream);
 begin
   Create;
   setFromStream(AStream);
 end;
 
-destructor TError.Destroy;
+destructor TJSONRPCError.Destroy;
 begin
   inherited Destroy;
 end;
 
-function TError.FormatJSON(AOptions: TFormatOptions;
+function TJSONRPCError.FormatJSON(AOptions: TFormatOptions;
   AIndentsize: Integer): TJSONStringType;
 begin
   Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);

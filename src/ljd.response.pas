@@ -47,14 +47,14 @@ type
 { EResponseWrongMemberType }
   EResponseWrongMemberType = Exception;
 
-{ TResponse }
-  TResponse = class(TObject)
+{ TJSONRPCResponse }
+  TJSONRPCResponse = class(TObject)
   private
     FJSONRPC: TJSONStringType;
     FHasResult: Boolean;
     FResult: TJSONData;
     FHasError: Boolean;
-    FError: TError;
+    FError: TJSONRPCError;
     FIDIsNull: Boolean;
     FID: Int64;
 
@@ -91,7 +91,7 @@ type
       read FResult;
     property HasError: Boolean
       read FHasError;
-    property Error: TError
+    property Error: TJSONRPCError
       read FError;
     property IDIsNull: Boolean
       read FIDIsNull;
@@ -132,9 +132,9 @@ resourcestring
 
 implementation
 
-{ TResponse }
+{ TJSONRPCResponse }
 
-procedure TResponse.setFromJSON(const AJSON: TJSONStringType);
+procedure TJSONRPCResponse.setFromJSON(const AJSON: TJSONStringType);
 var
   jData: TJSONData;
 begin
@@ -157,7 +157,7 @@ begin
   end;
 end;
 
-procedure TResponse.setFromJSONData(const AJSONData: TJSONData);
+procedure TJSONRPCResponse.setFromJSONData(const AJSONData: TJSONData);
 begin
   if aJSONData.JSONType <> jtObject then
   begin
@@ -166,7 +166,7 @@ begin
   setFromJSONObject(aJSONData as TJSONObject);
 end;
 
-procedure TResponse.setFromJSONObject(const AJSONObject: TJSONObject);
+procedure TJSONRPCResponse.setFromJSONObject(const AJSONObject: TJSONObject);
 var
   jData, jResult, jError: TJSONData;
 begin
@@ -210,7 +210,7 @@ begin
       begin
         FreeAndNil(FError);
       end;
-      FError:= TError.Create(jError);
+      FError:= TJSONRPCError.Create(jError);
       FHasError:= True;
       FHasResult:= False;
     end
@@ -254,7 +254,7 @@ begin
   end;
 end;
 
-procedure TResponse.setFromStream(const AStream: TStream);
+procedure TJSONRPCResponse.setFromStream(const AStream: TStream);
 var
   jData: TJSONData;
 begin
@@ -277,7 +277,7 @@ begin
   end;
 end;
 
-function TResponse.getAsJSON: TJSONStringType;
+function TJSONRPCResponse.getAsJSON: TJSONStringType;
 var
   jObject: TJSONObject;
 begin
@@ -288,12 +288,12 @@ begin
   jObject.Free;
 end;
 
-function TResponse.getAsJSONData: TJSONData;
+function TJSONRPCResponse.getAsJSONData: TJSONData;
 begin
   Result:= getAsJSONObject as TJSONData;
 end;
 
-function TResponse.getAsJSONObject: TJSONObject;
+function TJSONRPCResponse.getAsJSONObject: TJSONObject;
 begin
   Result:= TJSONObject.Create;
   Result.Add(cjJSONRPC, cjJSONRPCversion);
@@ -311,12 +311,12 @@ begin
   end;
 end;
 
-function TResponse.getAsStream: TStream;
+function TJSONRPCResponse.getAsStream: TStream;
 begin
   Result:= TStringStream.Create(getAsJSON, TEncoding.UTF8);
 end;
 
-constructor TResponse.Create;
+constructor TJSONRPCResponse.Create;
 begin
   FCompressedJSON:= True;
 
@@ -329,37 +329,31 @@ begin
   FID:= -1;
 end;
 
-constructor TResponse.Create(const AJSON: TJSONStringType);
+constructor TJSONRPCResponse.Create(const AJSON: TJSONStringType);
 begin
   Create;
   setFromJSON(AJSON);
 end;
 
-constructor TResponse.Create(const AJSONData: TJSONData);
+constructor TJSONRPCResponse.Create(const AJSONData: TJSONData);
 begin
   Create;
   setFromJSONData(AJSONData);
 end;
 
-constructor TResponse.Create(const AJSONObject: TJSONObject);
+constructor TJSONRPCResponse.Create(const AJSONObject: TJSONObject);
 begin
   Create;
   setFromJSONObject(AJSONObject);
 end;
 
-function TResponse.FormatJSON(AOptions: TFormatOptions;
-  AIndentsize: Integer): TJSONStringType;
-begin
-  Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
-end;
-
-constructor TResponse.Create(const AStream: TStream);
+constructor TJSONRPCResponse.Create(const AStream: TStream);
 begin
   Create;
   setFromStream(AStream);
 end;
 
-destructor TResponse.Destroy;
+destructor TJSONRPCResponse.Destroy;
 begin
   if FHasResult then
   begin
@@ -370,6 +364,12 @@ begin
     FError.Free;
   end;
   inherited Destroy;
+end;
+
+function TJSONRPCResponse.FormatJSON(AOptions: TFormatOptions;
+  AIndentsize: Integer): TJSONStringType;
+begin
+  Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
 end;
 
 end.

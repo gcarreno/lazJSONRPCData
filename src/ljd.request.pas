@@ -49,8 +49,8 @@ type
 { TRequestParametersType }
   TRequestParametersType = (rptUnknown, rptArray, rptObject);
 
-{ TRequest }
-  TRequest = class(TObject)
+{ TJSONRPCRequest }
+  TJSONRPCRequest = class(TObject)
   private
     FJSONRPC: TJSONStringType;
     FMethod: TJSONStringType;
@@ -135,9 +135,9 @@ resourcestring
 
 implementation
 
-{ TRequest }
+{ TJSONRPCRequest }
 
-procedure TRequest.setFromJSON(const AJSON: TJSONStringType);
+procedure TJSONRPCRequest.setFromJSON(const AJSON: TJSONStringType);
 var
   jData: TJSONData;
 begin
@@ -160,7 +160,7 @@ begin
   end;
 end;
 
-procedure TRequest.setFromJSONData(const AJSONData: TJSONData);
+procedure TJSONRPCRequest.setFromJSONData(const AJSONData: TJSONData);
 begin
   if aJSONData.JSONType <> jtObject then
   begin
@@ -169,7 +169,7 @@ begin
   setFromJSONObject(aJSONData as TJSONObject);
 end;
 
-procedure TRequest.setFromJSONObject(const AJSONObject: TJSONObject);
+procedure TJSONRPCRequest.setFromJSONObject(const AJSONObject: TJSONObject);
 var
   jData: TJSONData;
 begin
@@ -221,7 +221,7 @@ begin
   end;
 end;
 
-procedure TRequest.setFromStream(const AStream: TStream);
+procedure TJSONRPCRequest.setFromStream(const AStream: TStream);
 var
   jData: TJSONData;
 begin
@@ -244,7 +244,7 @@ begin
   end;
 end;
 
-function TRequest.getAsJSON: TJSONStringType;
+function TJSONRPCRequest.getAsJSON: TJSONStringType;
 var
   jObject: TJSONObject;
 begin
@@ -255,12 +255,12 @@ begin
   jObject.Free;
 end;
 
-function TRequest.getAsJSONData: TJSONData;
+function TJSONRPCRequest.getAsJSONData: TJSONData;
 begin
   Result:= getAsJSONObject as TJSONData;
 end;
 
-function TRequest.getAsJSONObject: TJSONObject;
+function TJSONRPCRequest.getAsJSONObject: TJSONObject;
 begin
   Result:= TJSONObject.Create;
   Result.Add(cjJSONRPC, cjJSONRPCversion);
@@ -279,18 +279,18 @@ begin
   end;
 end;
 
-function TRequest.getAsStream: TStream;
+function TJSONRPCRequest.getAsStream: TStream;
 begin
   Result:= TStringStream.Create(getAsJSON, TEncoding.UTF8);
 end;
 
-function TRequest.FormatJSON(AOptions: TFormatOptions;
+function TJSONRPCRequest.FormatJSON(AOptions: TFormatOptions;
   AIndentsize: Integer): TJSONStringType;
 begin
   Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
 end;
 
-constructor TRequest.Create;
+constructor TJSONRPCRequest.Create;
 begin
   FCompressedJSON:= True;
 
@@ -302,31 +302,31 @@ begin
   FNotification:= False;
 end;
 
-constructor TRequest.Create(const AJSON: TJSONStringType);
+constructor TJSONRPCRequest.Create(const AJSON: TJSONStringType);
 begin
   Create;
   setFromJSON(AJSON);
 end;
 
-constructor TRequest.Create(const AJSONData: TJSONData);
+constructor TJSONRPCRequest.Create(const AJSONData: TJSONData);
 begin
   Create;
   setFromJSONData(AJSONData);
 end;
 
-constructor TRequest.Create(const AJSONObject: TJSONObject);
+constructor TJSONRPCRequest.Create(const AJSONObject: TJSONObject);
 begin
   Create;
   setFromJSONObject(AJSONObject);
 end;
 
-constructor TRequest.Create(const AStream: TStream);
+constructor TJSONRPCRequest.Create(const AStream: TStream);
 begin
   Create;
   setFromStream(AStream);
 end;
 
-destructor TRequest.Destroy;
+destructor TJSONRPCRequest.Destroy;
 begin
   if Assigned(FParams) then
   begin
