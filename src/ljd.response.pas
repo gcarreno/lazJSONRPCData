@@ -132,7 +132,7 @@ resourcestring
 
 implementation
 
-{ TJSONRPCResponse }
+{ TResponse }
 
 procedure TJSONRPCResponse.setFromJSON(const AJSON: TJSONStringType);
 var
@@ -347,6 +347,12 @@ begin
   setFromJSONObject(AJSONObject);
 end;
 
+function TJSONRPCResponse.FormatJSON(AOptions: TFormatOptions;
+  AIndentsize: Integer): TJSONStringType;
+begin
+  Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
+end;
+
 constructor TJSONRPCResponse.Create(const AStream: TStream);
 begin
   Create;
@@ -364,12 +370,6 @@ begin
     FError.Free;
   end;
   inherited Destroy;
-end;
-
-function TJSONRPCResponse.FormatJSON(AOptions: TFormatOptions;
-  AIndentsize: Integer): TJSONStringType;
-begin
-  Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
 end;
 
 end.

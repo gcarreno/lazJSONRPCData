@@ -135,7 +135,7 @@ resourcestring
 
 implementation
 
-{ TJSONRPCRequest }
+{ TRequest }
 
 procedure TJSONRPCRequest.setFromJSON(const AJSON: TJSONStringType);
 var
