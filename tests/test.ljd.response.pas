@@ -40,7 +40,7 @@ type
 { TTestlazJSONRPCResponse }
   TTestlazJSONRPCResponse= class(TTestCase)
   private
-    FResponse: TResponse;
+    FResponse: TJSONRPCResponse;
 
     procedure CheckFieldsCreate;
     procedure CheckFieldsCreateEmpty;
@@ -128,21 +128,21 @@ end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreate;
 begin
-  FResponse:= TResponse.Create;
+  FResponse:= TJSONRPCResponse.Create;
   CheckFieldsCreate;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromEmpty;
 begin
-  FResponse:= TResponse.Create(cjResponseEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseEmpty);
   CheckFieldsCreateEmpty;
   FResponse.Free;
 end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseCreateFromErrorEmpty;
 begin
-  FResponse:= TResponse.Create(cjResponseErrorEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseErrorEmpty);
   CheckFieldsCreateErrorEmpty;
   FResponse.Free;
 end;
@@ -152,7 +152,7 @@ var
   jData: TJSONData = nil;
 begin
   jData:= GetJSON(cjResponseEmpty);
-  FResponse:= TResponse.Create(jData);
+  FResponse:= TJSONRPCResponse.Create(jData);
   jData.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
@@ -163,7 +163,7 @@ var
   jData: TJSONData = nil;
 begin
   jData:= GetJSON(cjResponseEmpty);
-  FResponse:= TResponse.Create(TJSONObject(jData));
+  FResponse:= TJSONRPCResponse.Create(TJSONObject(jData));
   jData.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
@@ -174,7 +174,7 @@ var
   ssRequestEmpty: TStringStream = nil;
 begin
   ssRequestEmpty:= TStringStream.Create(cjResponseEmpty, TEncoding.UTF8);
-  FResponse:= TResponse.Create(ssRequestEmpty);
+  FResponse:= TJSONRPCResponse.Create(ssRequestEmpty);
   ssRequestEmpty.Free;
   CheckFieldsCreateEmpty;
   FResponse.Free;
@@ -182,7 +182,7 @@ end;
 
 procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSON;
 begin
-  FResponse:= TResponse.Create(cjResponseEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseEmpty);
   AssertEquals('Response AsJSON matches', cjResponseEmpty, FResponse.AsJSON);
   FResponse.Free;
 end;
@@ -191,7 +191,7 @@ procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONData;
 var
   jData: TJSONData = nil;
 begin
-  FResponse:= TResponse.Create(cjResponseEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseEmpty);
   jData:= FResponse.AsJSONData;
   AssertEquals('Response AsJSONData matches', cjResponseEmpty, jData.AsJSON);
   jData.Free;
@@ -202,7 +202,7 @@ procedure TTestlazJSONRPCResponse.TestlazJSONRPCResponseAsJSONObject;
 var
   jObject: TJSONObject = nil;
 begin
-  FResponse:= TResponse.Create(cjResponseEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseEmpty);
   jObject:= FResponse.AsJSONObject;
   AssertEquals('Response AsJSONObject matches', cjResponseEmpty, jObject.AsJSON);
   jObject.Free;
@@ -214,7 +214,7 @@ var
   ssResponseEmpty: TStringStream;
   sResponseEmpty: TStream;
 begin
-  FResponse:= TResponse.Create(cjResponseEmpty);
+  FResponse:= TJSONRPCResponse.Create(cjResponseEmpty);
   ssResponseEmpty:= TStringStream.Create('', TEncoding.UTF8);
   sResponseEmpty:= FResponse.AsStream;
   ssResponseEmpty.LoadFromStream(sResponseEmpty);
