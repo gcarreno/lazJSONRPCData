@@ -80,6 +80,9 @@ type
 
     destructor Destroy; override;
 
+    function FormatJSON(AOptions : TFormatOptions = DefaultFormat;
+      AIndentsize : Integer = DefaultIndentSize): TJSONStringType;
+
     property JSONRPC: TJSONStringType
       read FJSONRPC;
     property HasResult: Boolean
@@ -342,6 +345,12 @@ constructor TResponse.Create(const AJSONObject: TJSONObject);
 begin
   Create;
   setFromJSONObject(AJSONObject);
+end;
+
+function TResponse.FormatJSON(AOptions: TFormatOptions;
+  AIndentsize: Integer): TJSONStringType;
+begin
+  Result:= getAsJSONObject.FormatJSON(AOptions, AIndentsize);
 end;
 
 constructor TResponse.Create(const AStream: TStream);
